@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lock In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ash-950:#08080a;
+    --ash-900:#0b0c0e;
+    --ash-850:#101113;
+    --ash-800:#141518;
+    --ash-700:#1c1e22;
+    --ash-600:#26282d;
+    --line:rgba(255,255,255,.085);
+    --line-2:rgba(255,255,255,.16);
+    --text:#f2f3f4;
+    --dim:#a6a9ad;
+    --faint:#6c6f74;
+    --silver:linear-gradient(168deg,#ffffff 0%,#d6d8dc 34%,#8e9197 52%,#c3c5c9 70%,#f3f4f5 100%);
+    /* brighter, flatter silver for buttons so dark text stays legible */
+    --silver-btn:linear-gradient(180deg,#fcfcfd 0%,#eaecee 46%,#d2d5d9 60%,#eef0f2 100%);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ash-950);
+    color:var(--text);
+    font-family:"Space Grotesk",sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    letter-spacing:-.01em;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  .mono{font-family:"Space Mono",monospace;letter-spacing:0}
+  .chrome{
+    background:var(--silver);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+  }
+  .logo{font-family:"Grenze Gotisch",serif;font-weight:700;white-space:nowrap;letter-spacing:.005em}
+  .kicker{
+    font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--faint);
+  }
+
+  /* ---------------- NAV ---------------- */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 32px;transition:background .4s ease,border-color .4s ease,padding .4s ease;
+    border-bottom:1px solid transparent;
+  }
+  .nav.solid{background:rgba(8,8,10,.72);backdrop-filter:blur(16px);border-bottom-color:var(--line);padding:14px 32px}
+  .nav .logo{font-size:27px;color:#e9eaec;line-height:1.2}
+  .nav .links{display:flex;gap:30px;align-items:center}
+  .nav .links a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+  .nav .links a:hover{color:var(--text)}
+  .nav .links a.nav-cta{
+    display:inline-flex;align-items:center;gap:8px;background:var(--silver-btn);color:#000;
+    font-weight:700;font-size:14px;padding:10px 18px;border-radius:10px;text-decoration:none;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 -1px 1px rgba(0,0,0,.15) inset,0 8px 22px rgba(0,0,0,.5);
+    transition:transform .2s,filter .2s;
+  }
+  .nav .links a.nav-cta:hover{color:#000}
+  .nav-cta:hover{transform:translateY(-1px);filter:brightness(1.08)}
+  @media(max-width:760px){.nav .links a:not(.nav-cta){display:none}}
+
+  /* ---------------- HERO SCRUB ---------------- */
+  .hero{position:relative;height:360vh}
+  .hero .stage{position:sticky;top:0;height:100vh;overflow:hidden}
+  .hero video{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    background:var(--ash-950);will-change:contents;
+  }
+  /* vignette + legibility scrims over video */
+  .hero .scrim{
+    position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(120% 90% at 50% 35%,transparent 35%,rgba(8,8,10,.55) 100%),
+      linear-gradient(180deg,rgba(8,8,10,.55) 0%,transparent 22%,transparent 55%,rgba(8,8,10,.92) 100%);
+  }
+  .hero .stage::after{ /* film grain-ish top edge for nav legibility */
+    content:"";position:absolute;top:0;left:0;right:0;height:140px;
+    background:linear-gradient(180deg,rgba(8,8,10,.8),transparent);pointer-events:none;
+  }
+  /* masks the Kling watermark in the bottom-right corner: blurs + tints toward ash, feathered so there's no hard edge */
+  .hero .wm-cover{
+    position:absolute;right:0;bottom:0;z-index:2;width:520px;height:250px;pointer-events:none;
+    background:radial-gradient(125% 135% at 100% 100%,rgba(8,8,10,.98) 0%,rgba(8,8,10,.6) 50%,rgba(8,8,10,0) 82%);
+    -webkit-backdrop-filter:blur(14px) brightness(.65);backdrop-filter:blur(14px) brightness(.65);
+    -webkit-mask-image:radial-gradient(125% 135% at 100% 100%,#000 40%,rgba(0,0,0,0) 84%);
+    mask-image:radial-gradient(125% 135% at 100% 100%,#000 40%,rgba(0,0,0,0) 84%);
+  }
+  @media(max-width:760px){.hero .wm-cover{width:300px;height:150px}}
+  .hero .content{
+    position:absolute;inset:0;z-index:3;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:0 24px;
+  }
+  .hero .content .eyebrow{margin-bottom:26px;opacity:0;transform:translateY(14px);animation:rise .9s .2s ease forwards}
+  .hero h1{
+    font-size:clamp(54px,11vw,150px);line-height:.86;font-weight:700;letter-spacing:-.04em;
+  }
+  .hero h1 .l1{display:block;opacity:0;transform:translateY(22px);animation:rise 1s .32s cubic-bezier(.2,.7,.2,1) forwards}
+  .hero h1 .l2{display:block;opacity:0;transform:translateY(22px);animation:rise 1s .46s cubic-bezier(.2,.7,.2,1) forwards}
+  .hero .sub{
+    max-width:540px;margin:30px auto 0;color:var(--dim);font-size:clamp(16px,2.1vw,20px);line-height:1.6;
+    opacity:0;transform:translateY(16px);animation:rise 1s .62s ease forwards;
+  }
+  .hero .actions{
+    display:flex;gap:14px;margin-top:38px;flex-wrap:wrap;justify-content:center;
+    opacity:0;transform:translateY(16px);animation:rise 1s .76s ease forwards;
+  }
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:15px;
+    padding:15px 24px;border-radius:12px;border:1px solid transparent;cursor:pointer;
+    text-decoration:none;letter-spacing:-.01em;transition:transform .2s,filter .2s,background .2s,border-color .2s;
+    color:var(--text);
+  }
+  .btn svg{width:17px;height:17px;flex:none}
+  .btn-silver{background:var(--silver-btn);color:#070708;font-weight:700;box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 -1px 1px rgba(0,0,0,.15) inset,0 10px 30px rgba(0,0,0,.55)}
+  .btn-silver:hover{transform:translateY(-2px);filter:brightness(1.07)}
+  .btn-ghost{background:rgba(255,255,255,.04);border-color:var(--line-2);backdrop-filter:blur(6px)}
+  .btn-ghost:hover{background:rgba(255,255,255,.09);transform:translateY(-2px)}
+
+  /* scroll cue + progress dial */
+  .scroll-cue{
+    position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:4;
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);
+    transition:opacity .4s;
+  }
+  .scroll-cue .track{width:1px;height:46px;background:linear-gradient(180deg,var(--faint),transparent);position:relative;overflow:hidden}
+  .scroll-cue .track::after{content:"";position:absolute;top:-50%;left:0;width:100%;height:50%;background:#fff;animation:drip 1.8s ease-in-out infinite}
+  @keyframes drip{0%{top:-50%}60%,100%{top:120%}}
+
+  .rotor{
+    position:absolute;right:34px;top:50%;transform:translateY(-50%);z-index:4;
+    width:62px;height:62px;display:grid;place-items:center;
+    transition:opacity .4s;
+  }
+  .rotor svg{width:62px;height:62px;transform:rotate(-90deg)}
+  .rotor .pct{position:absolute;font-family:"Space Mono",monospace;font-size:11px;color:var(--text)}
+  @media(max-width:760px){.rotor{display:none}}
+
+  /* ---------------- shared section ---------------- */
+  section.block{position:relative;z-index:5;background:var(--ash-950)}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:54px}
+  .sec-head .num{font-family:"Space Mono",monospace;font-size:13px;color:var(--faint)}
+  .sec-head h2{font-size:clamp(13px,1.4vw,15px);font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-family:"Space Mono",monospace}
+
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------------- MANIFESTO ---------------- */
+  .manifesto{padding:150px 0;border-top:1px solid var(--line)}
+  .manifesto .big{
+    font-size:clamp(30px,5.4vw,68px);line-height:1.04;font-weight:600;letter-spacing:-.03em;max-width:1000px;
+  }
+  .manifesto .big .muted{color:var(--faint)}
+  .manifesto .foot{margin-top:46px;display:flex;gap:46px;flex-wrap:wrap;color:var(--dim);font-size:16px;max-width:760px}
+  .manifesto .foot p{flex:1;min-width:220px;line-height:1.65}
+
+  /* ---------------- FEATURES ---------------- */
+  .features{padding:120px 0;border-top:1px solid var(--line)}
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+  .feat{
+    background:linear-gradient(180deg,var(--ash-900),var(--ash-950));padding:44px 36px 48px;
+    display:flex;flex-direction:column;gap:18px;min-height:340px;transition:background .4s;
+  }
+  .feat:hover{background:linear-gradient(180deg,var(--ash-850),var(--ash-900))}
+  .feat .ico{width:46px;height:46px;color:#cfd1d4}
+  .feat .ico svg{width:46px;height:46px;stroke:currentColor;fill:none;stroke-width:1.3}
+  .feat .fnum{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;color:var(--faint);text-transform:uppercase}
+  .feat h3{font-size:24px;font-weight:600;letter-spacing:-.02em;margin-top:auto}
+  .feat p{color:var(--dim);font-size:15px;line-height:1.65}
+  @media(max-width:860px){.feat-grid{grid-template-columns:1fr}.feat{min-height:0}}
+
+  /* ---------------- APP PREVIEW ---------------- */
+  .preview{padding:130px 0;border-top:1px solid var(--line)}
+  .preview .row{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+  .preview .copy h3{font-size:clamp(28px,3.6vw,42px);font-weight:600;letter-spacing:-.025em;line-height:1.08;margin-bottom:22px}
+  .preview .copy p{color:var(--dim);font-size:17px;line-height:1.7;max-width:440px}
+  .preview .copy .ticks{margin-top:30px;display:flex;flex-direction:column;gap:14px}
+  .preview .copy .ticks div{display:flex;gap:13px;align-items:center;color:var(--text);font-size:15px}
+  .preview .copy .ticks .dot{width:6px;height:6px;border-radius:50%;background:var(--silver);flex:none}
+  @media(max-width:860px){.preview .row{grid-template-columns:1fr;gap:50px}.preview .stagewrap{order:-1}}
+
+  /* phone mockup */
+  .phone{
+    width:300px;height:610px;margin:0 auto;border-radius:46px;padding:13px;position:relative;
+    background:linear-gradient(150deg,#2a2c30,#0c0d0f 60%);
+    box-shadow:0 1px 0 rgba(255,255,255,.14) inset,0 40px 90px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05);
+  }
+  .phone .screen{
+    position:absolute;inset:13px;border-radius:34px;overflow:hidden;
+    background:radial-gradient(120% 80% at 50% 0%,#15171a,#08080a 70%);
+    display:flex;flex-direction:column;
+  }
+  .phone .notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:96px;height:26px;background:#000;border-radius:0 0 14px 14px;z-index:5}
+  .phone .stat{display:flex;justify-content:space-between;align-items:center;padding:14px 22px 0;font-family:"Space Mono",monospace;font-size:11px;color:var(--dim)}
+  .phone .app{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 24px;position:relative}
+  .phone .app .label{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:30px}
+  .timer-ring{width:196px;height:196px;position:relative;display:grid;place-items:center}
+  .timer-ring svg{width:196px;height:196px;transform:rotate(-90deg)}
+  .timer-ring .time{position:absolute;text-align:center}
+  .timer-ring .time .t{font-family:"Space Mono",monospace;font-size:38px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+  .timer-ring .time .s{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.2em;color:var(--faint);text-transform:uppercase;margin-top:4px}
+  .phone .session{margin-top:34px;text-align:center}
+  .phone .session .nm{font-size:16px;font-weight:600;margin-bottom:4px}
+  .phone .session .meta{font-family:"Space Mono",monospace;font-size:11px;color:var(--faint)}
+  .phone .controls{display:flex;gap:12px;margin-top:30px;width:100%;justify-content:center}
+  .phone .controls .pill{
+    height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;
+  }
+  .phone .controls .pri{flex:1;background:var(--silver-btn);color:#070708;font-weight:700}
+  .phone .controls .sec{width:48px;background:rgba(255,255,255,.07);border:1px solid var(--line-2);color:var(--text)}
+
+  /* ---------------- PROOF ---------------- */
+  .proof{padding:120px 0;border-top:1px solid var(--line)}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-bottom:80px}
+  .stat-card{border:1px solid var(--line);border-radius:18px;padding:38px 32px;background:linear-gradient(180deg,var(--ash-900),var(--ash-950))}
+  .stat-card .n{font-family:"Space Mono",monospace;font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-.03em;line-height:1}
+  .stat-card .l{margin-top:14px;color:var(--dim);font-size:14px;letter-spacing:.02em}
+  @media(max-width:760px){.stats{grid-template-columns:1fr}}
+  .quote{max-width:880px;margin:0 auto;text-align:center}
+  .quote blockquote{font-size:clamp(22px,3.2vw,34px);font-weight:500;letter-spacing:-.02em;line-height:1.32}
+  .quote .by{margin-top:26px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
+
+  /* ---------------- DOWNLOAD CTA ---------------- */
+  .download{padding:160px 0;border-top:1px solid var(--line);text-align:center;position:relative;overflow:hidden}
+  .download::before{
+    content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);
+    width:680px;height:680px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.07),transparent 62%);pointer-events:none;
+  }
+  .download .logo{font-size:clamp(56px,10vw,120px);line-height:1;margin-bottom:30px}
+  .download h3{font-size:clamp(26px,3.6vw,40px);font-weight:600;letter-spacing:-.025em;margin-bottom:18px;position:relative}
+  .download p{color:var(--dim);max-width:440px;margin:0 auto 38px;font-size:17px;position:relative}
+  .download .actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative}
+  .download .qr-note{margin-top:30px;font-family:"Space Mono",monospace;font-size:11px;color:var(--faint);letter-spacing:.06em}
+
+  /* ---------------- FOOTER ---------------- */
+  footer{border-top:1px solid var(--line);padding:60px 0 50px;background:var(--ash-950)}
+  footer .top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;margin-bottom:50px}
+  footer .logo{font-size:38px;color:#cfd1d4}
+  footer .cols{display:flex;gap:64px;flex-wrap:wrap}
+  footer .col h5{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+  footer .col a{display:block;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:11px;transition:color .2s}
+  footer .col a:hover{color:var(--text)}
+  footer .base{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding-top:30px;border-top:1px solid var(--line);font-family:"Space Mono",monospace;font-size:11.5px;color:var(--faint)}
+
+  @media(max-width:760px){.wrap{padding:0 20px}.nav{padding:16px 20px}.nav.solid{padding:12px 20px}}
+  @media (prefers-reduced-motion: reduce){
+    .hero .content .eyebrow,.hero h1 .l1,.hero h1 .l2,.hero .sub,.hero .actions{animation:none;opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="logo">Lock In</div>
+  <div class="links">
+    <a href="#manifesto">Manifesto</a>
+    <a href="#features">Features</a>
+    <a href="#app">The app</a>
+    <a href="#download" class="nav-cta">Download
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO (scroll-scrubbed video) -->
+<header class="hero" id="hero">
+  <div class="stage">
+    <video id="heroVideo" muted playsinline preload="auto" disablepictureinpicture
+      src="https://res.cloudinary.com/ddbwrwscc/video/upload/v1780959570/kling_20260609_VIDEO_in_the_vid_1700_0_njewgt.mp4"></video>
+    <div class="scrim"></div>
+    <div class="wm-cover"></div>
+
+    <div class="content" id="heroContent">
+      <div class="eyebrow kicker">Focus, on demand · iOS &amp; Android</div>
+      <h1><span class="l1 chrome">LOCK</span><span class="l2 chrome">IN.</span></h1>
+      <p class="sub">A deep-work app for people who are done negotiating with their own attention. One ritual. One session. Everything else can wait.</p>
+      <div class="actions">
+        <a href="#download" class="btn btn-silver">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.9c0-2 1.6-3 1.7-3-.9-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7-1.3 0-2.6.8-3.2 2-1.4 2.4-.4 5.9 1 7.8.6.9 1.4 2 2.4 2 .9 0 1.3-.6 2.4-.6 1.1 0 1.4.6 2.4.6 1 0 1.6-.9 2.2-1.8.7-1 1-2 1-2.1 0 0-1.9-.8-1.9-3zm-2-5.5c.5-.6.9-1.5.8-2.4-.8 0-1.7.5-2.3 1.2-.5.5-.9 1.4-.8 2.3.9.1 1.8-.5 2.3-1.1z"/></svg>
+          Download for iOS
+        </a>
+        <a href="#app" class="btn btn-ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor" stroke="none"/></svg>
+          See the ritual
+        </a>
+      </div>
+    </div>
+
+    <!-- rotation progress dial -->
+    <div class="rotor" id="rotor">
+      <svg viewBox="0 0 62 62"><circle cx="31" cy="31" r="28" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="2"/><circle id="rotorArc" cx="31" cy="31" r="28" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-dasharray="175.9" stroke-dashoffset="175.9"/></svg>
+      <span class="pct" id="rotorPct">0°</span>
+    </div>
+
+    <div class="scroll-cue" id="scrollCue">
+      <span>Scroll to lock in</span>
+      <div class="track"></div>
+    </div>
+  </div>
+</header>
+
+<!-- MANIFESTO -->
+<section class="block manifesto" id="manifesto">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="num">01</span><h2>The manifesto</h2></div>
+    <p class="big reveal">Focus isn't a feature you toggle. <span class="muted">It's a position you take.</span> Lock In is the door you close on the noise — a single, deliberate session where the only move left is the work in front of you.</p>
+    <div class="foot">
+      <p class="reveal">Most apps fracture your attention and call it productivity. We do the opposite: one timer, one intention, zero feeds, zero badges. The interface disappears the moment you begin.</p>
+      <p class="reveal">When the session ends, it stays ended. No streak guilt, no dopamine loop — just a clean record of the hours you actually spent locked in.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="block features" id="features">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="num">02</span><h2>Three pillars</h2></div>
+    <div class="feat-grid">
+      <div class="feat reveal">
+        <div class="ico"><svg viewBox="0 0 48 48"><circle cx="24" cy="26" r="15"/><path d="M24 26V17"/><path d="M19 6h10"/><path d="M24 6v5"/></svg></div>
+        <span class="fnum">01 — Sessions</span>
+        <h3>The ritual timer</h3>
+        <p>Set an intention, choose a length, and start. The screen goes quiet and the clock takes over. One session at a time — the way deep work actually happens.</p>
+      </div>
+      <div class="feat reveal">
+        <div class="ico"><svg viewBox="0 0 48 48"><path d="M8 38V26"/><path d="M18 38V14"/><path d="M28 38V20"/><path d="M38 38V10"/></svg></div>
+        <span class="fnum">02 — Record</span>
+        <h3>Hours, not streaks</h3>
+        <p>A calm ledger of the time you've truly focused. No guilt mechanics, no broken-streak shame — just honest signal you can look back on.</p>
+      </div>
+      <div class="feat reveal">
+        <div class="ico"><svg viewBox="0 0 48 48"><rect x="9" y="9" width="30" height="30" rx="7"/><path d="M18 24l4 4 8-8"/></svg></div>
+        <span class="fnum">03 — Silence</span>
+        <h3>Block the noise</h3>
+        <p>Notifications, apps, and the urge to check — all held at the door for the length of your session. Come back when you're done, not before.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APP PREVIEW -->
+<section class="block preview" id="app">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="num">03</span><h2>Inside the app</h2></div>
+    <div class="row">
+      <div class="copy">
+        <h3 class="reveal">A single screen<br>that gets out of your way.</h3>
+        <p class="reveal">Open Lock In and there's nothing to configure, no feed to scroll. Name the session, set the clock, and press begin. The timer is the whole interface — everything else fades to black.</p>
+        <div class="ticks">
+          <div class="reveal"><span class="dot"></span>Full-screen focus mode with ambient dimming</div>
+          <div class="reveal"><span class="dot"></span>Haptic check-ins, never interruptions</div>
+          <div class="reveal"><span class="dot"></span>Syncs your hours across iPhone, iPad &amp; Mac</div>
+        </div>
+      </div>
+      <div class="stagewrap reveal">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="stat"><span>9:41</span><span>LOCK IN</span></div>
+            <div class="app">
+              <div class="label">Session in progress</div>
+              <div class="timer-ring">
+                <svg viewBox="0 0 196 196"><circle cx="98" cy="98" r="88" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/><circle cx="98" cy="98" r="88" fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="180"/><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#8e9197"/></linearGradient></defs></svg>
+                <div class="time"><div class="t">42:18</div><div class="s">remaining</div></div>
+              </div>
+              <div class="session">
+                <div class="nm">Draft the proposal</div>
+                <div class="meta">Deep work · 90 min</div>
+              </div>
+              <div class="controls">
+                <div class="pill pri">Hold to end</div>
+                <div class="pill sec">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><rect x="7" y="6" width="3.5" height="12" rx="1"/><rect x="14" y="6" width="3.5" height="12" rx="1"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="block proof">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="num">04</span><h2>The proof</h2></div>
+    <div class="stats">
+      <div class="stat-card reveal"><div class="n chrome">1.2M</div><div class="l">Hours locked in this year</div></div>
+      <div class="stat-card reveal"><div class="n chrome">4.9</div><div class="l">App Store rating · 38k reviews</div></div>
+      <div class="stat-card reveal"><div class="n chrome">200K+</div><div class="l">People who closed the door</div></div>
+    </div>
+    <div class="quote reveal">
+      <blockquote>“I stopped trying to manage my attention and just started <span class="chrome">locking in</span>. It's the only productivity app I've never wanted to delete.”</blockquote>
+      <div class="by">— Maya R. · Writer &amp; founder</div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="block download" id="download">
+  <div class="wrap">
+    <div class="kicker reveal" style="margin-bottom:24px;display:block">Free to start · iOS &amp; Android</div>
+    <div class="logo chrome reveal">Lock In</div>
+    <h3 class="reveal">Close the door.<br>Begin the session.</h3>
+    <p class="reveal">Download Lock In and take the first deliberate hour back. Your attention has been asking for it.</p>
+    <div class="actions reveal">
+      <a href="#" class="btn btn-silver">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.9c0-2 1.6-3 1.7-3-.9-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7-1.3 0-2.6.8-3.2 2-1.4 2.4-.4 5.9 1 7.8.6.9 1.4 2 2.4 2 .9 0 1.3-.6 2.4-.6 1.1 0 1.4.6 2.4.6 1 0 1.6-.9 2.2-1.8.7-1 1-2 1-2.1 0 0-1.9-.8-1.9-3zm-2-5.5c.5-.6.9-1.5.8-2.4-.8 0-1.7.5-2.3 1.2-.5.5-.9 1.4-.8 2.3.9.1 1.8-.5 2.3-1.1z"/></svg>
+        Download for iOS
+      </a>
+      <a href="#" class="btn btn-ghost">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.6 2.3c-.3.3-.5.7-.5 1.3v16.8c0 .6.2 1 .5 1.3l.1.1L13 12.6v-.2L3.7 2.2zM16.4 15.9l-2.9-2.9 2.9-2.9 3.5 2c1 .6 1 1.5 0 2zM13.5 12.4l2.9 2.9-9.2 5.2c-.4.2-.8.2-1.1 0zM6.1 3.2l9.3 5.3-2.9 2.9z"/></svg>
+        Get on Android
+      </a>
+    </div>
+    <div class="qr-note reveal">On desktop? Point your camera here — coming to the print version.</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="logo">Lock In</div>
+        <p style="color:var(--faint);font-size:13.5px;margin-top:14px;max-width:240px;font-family:'Space Mono',monospace;line-height:1.6">Deep work, by design. Made for people with something to finish.</p>
+      </div>
+      <div class="cols">
+        <div class="col"><h5>Product</h5><a href="#features">Features</a><a href="#app">The app</a><a href="#download">Download</a><a href="#">Changelog</a></div>
+        <div class="col"><h5>Company</h5><a href="#manifesto">Manifesto</a><a href="#">Press</a><a href="#">Careers</a><a href="#">Contact</a></div>
+        <div class="col"><h5>Follow</h5><a href="#">X / Twitter</a><a href="#">Instagram</a><a href="#">Newsletter</a></div>
+      </div>
+    </div>
+    <div class="base">
+      <span>© 2026 Lock In Labs. All rights reserved.</span>
+      <span>Privacy · Terms</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------- NAV solidify ---------- */
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>40);},{passive:true});
+
+/* ---------- Scroll-reveal ---------- */
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.18});
+document.querySelectorAll('.reveal').forEach((el,i)=>{
+  el.style.transitionDelay=(Math.min(i%3,3)*70)+'ms';
+  io.observe(el);
+});
+
+/* ---------- Scroll-scrubbed hero video (rook rotates) ---------- */
+(function(){
+  const hero=document.getElementById('hero');
+  const video=document.getElementById('heroVideo');
+  const content=document.getElementById('heroContent');
+  const cue=document.getElementById('scrollCue');
+  const rotor=document.getElementById('rotor');
+  const rotorArc=document.getElementById('rotorArc');
+  const rotorPct=document.getElementById('rotorPct');
+  const ARC=175.9; // 2πr, r=28
+
+  const coarse=matchMedia('(pointer:coarse)').matches;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Fallback: touch / reduced-motion → gentle autoplay loop, no scrub pin
+  if(coarse||reduce){
+    hero.style.height='100vh';
+    video.loop=true;
+    video.play().catch(()=>{});
+    if(rotor) rotor.style.display='none';
+    return;
+  }
+
+  let duration=5;
+  let target=0;       // desired time
+  let shown=0;        // lerped time actually applied
+  let ready=false;
+
+  video.addEventListener('loadedmetadata',()=>{duration=video.duration||5;});
+  video.addEventListener('loadeddata',()=>{ready=true;video.pause();});
+
+  function computeProgress(){
+    // rect-based: works whether the window or an ancestor is the scroll container
+    const r=hero.getBoundingClientRect();
+    const scrollable=hero.offsetHeight-innerHeight; // distance over which we scrub
+    if(scrollable<=0) return 0;
+    const p=(-r.top)/scrollable;
+    return Math.max(0,Math.min(1,p));
+  }
+
+  function tick(){
+    const p=computeProgress();
+    target=p*duration;
+    // smooth approach for buttery scrubbing
+    shown+=(target-shown)*0.16;
+    if(Math.abs(target-shown)<0.004) shown=target;
+    if(ready && !video.seeking){
+      try{ video.currentTime=Math.min(duration-0.001,Math.max(0,shown)); }catch(e){}
+    }
+    // rotation dial (maps 0..1 → 0..360°)
+    const deg=Math.round(p*360);
+    if(rotorArc){rotorArc.style.strokeDashoffset=(ARC*(1-p)).toFixed(2);}
+    if(rotorPct){rotorPct.textContent=deg+'°';}
+    // fade hero copy + cue out over first 45% of scrub
+    const fade=Math.max(0,1-p/0.45);
+    content.style.opacity=fade.toFixed(3);
+    content.style.transform='translateY('+(-(1-fade)*40).toFixed(1)+'px) scale('+(1-(1-fade)*0.04).toFixed(3)+')';
+    cue.style.opacity=fade.toFixed(3);
+    if(rotor) rotor.style.opacity=(p>0.02&&p<0.99?1:0);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // nudge buffering
+  video.addEventListener('canplay',()=>{video.pause();});
+})();
+</script>
+</body>
+</html>

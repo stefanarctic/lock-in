@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lock In — Website Scheme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ash-950:#08080a;
+    --ash-900:#0b0c0e;
+    --ash-850:#101113;
+    --ash-800:#141518;
+    --ash-700:#1c1e22;
+    --ash-600:#26282d;
+    --line:rgba(255,255,255,.085);
+    --line-2:rgba(255,255,255,.14);
+    --text:#f2f3f4;
+    --dim:#a6a9ad;
+    --faint:#6c6f74;
+    --silver:linear-gradient(168deg,#ffffff 0%,#d6d8dc 34%,#8e9197 52%,#c3c5c9 70%,#f3f4f5 100%);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ash-950);
+    color:var(--text);
+    font-family:"Space Grotesk",sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    letter-spacing:-.01em;
+    background-image:radial-gradient(120% 80% at 50% -10%,rgba(255,255,255,.05),transparent 60%);
+    background-repeat:no-repeat;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+
+  /* ---------- shared bits ---------- */
+  .mono{font-family:"Space Mono",monospace;letter-spacing:0}
+  .kicker{
+    font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--faint);
+  }
+  .chrome{
+    background:var(--silver);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+  }
+  .logo{font-family:"UnifrakturCook",serif;font-weight:700;letter-spacing:.01em}
+
+  /* ---------- doc header ---------- */
+  .docbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;
+    background:rgba(8,8,10,.72);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .docbar .logo{font-size:21px;line-height:1.3;color:#e9eaec;white-space:nowrap;flex-shrink:0}
+  .docbar .tag{display:flex;gap:18px;align-items:center}
+  .pill{
+    font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--dim);border:1px solid var(--line-2);border-radius:999px;padding:6px 12px;
+  }
+
+  /* ---------- hero of the doc ---------- */
+  .doc-hero{padding:90px 0 64px;border-bottom:1px solid var(--line)}
+  .doc-hero h1{
+    font-size:clamp(40px,7vw,84px);line-height:.98;font-weight:600;letter-spacing:-.03em;
+    margin:22px 0 0;
+  }
+  .doc-hero p.lede{
+    max-width:620px;margin-top:24px;color:var(--dim);font-size:18px;line-height:1.6;
+  }
+  .meta-row{display:flex;flex-wrap:wrap;gap:40px;margin-top:44px}
+  .meta-row .cell{min-width:120px}
+  .meta-row .cell .k{font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .meta-row .cell .v{font-size:15px;color:var(--text)}
+
+  /* ---------- section scaffolding ---------- */
+  section.block{padding:84px 0;border-bottom:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:40px}
+  .sec-head .num{font-family:"Space Mono",monospace;font-size:13px;color:var(--faint)}
+  .sec-head h2{font-size:clamp(24px,3.4vw,34px);font-weight:600;letter-spacing:-.02em}
+  .sec-head .h-note{margin-left:auto;color:var(--faint);font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.08em;align-self:center}
+
+  .lead-copy{max-width:680px;color:var(--dim);font-size:16.5px;line-height:1.7;margin-bottom:8px}
+  .lead-copy strong{color:var(--text);font-weight:500}
+
+  /* ---------- design system ---------- */
+  .grid{display:grid;gap:18px}
+  .card{
+    background:linear-gradient(180deg,var(--ash-850),var(--ash-900));
+    border:1px solid var(--line);border-radius:16px;padding:26px;
+  }
+  .card .c-label{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:18px}
+
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px}
+  .sw{border-radius:12px;border:1px solid var(--line);overflow:hidden}
+  .sw .chip{height:64px}
+  .sw .info{padding:9px 10px;font-family:"Space Mono",monospace;font-size:10px;line-height:1.5}
+  .sw .info .nm{color:var(--text)}
+  .sw .info .hx{color:var(--faint)}
+
+  .type-row{padding:18px 0;border-bottom:1px solid var(--line)}
+  .type-row:last-child{border-bottom:0}
+  .type-row .tag{font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+  .specimen-display{font-size:46px;font-weight:600;letter-spacing:-.02em}
+  .specimen-mono{font-family:"Space Mono",monospace;font-size:20px}
+  .specimen-black{font-family:"UnifrakturCook",serif;font-size:52px}
+
+  .chrome-demo{
+    border-radius:16px;border:1px solid var(--line);
+    background:
+      radial-gradient(120% 140% at 50% 0%,rgba(255,255,255,.07),transparent 55%),
+      linear-gradient(180deg,#141518,#0b0c0e);
+    padding:48px;display:flex;align-items:center;justify-content:center;gap:30px;flex-wrap:wrap;
+  }
+  .chrome-word{font-size:64px;font-weight:700;letter-spacing:-.03em}
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;
+    padding:14px 22px;border-radius:12px;border:1px solid transparent;cursor:pointer;
+    text-decoration:none;letter-spacing:-.01em;
+  }
+  .btn-silver{background:var(--silver);color:#0a0a0b;box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 10px 30px rgba(0,0,0,.5)}
+  .btn-ghost{background:transparent;color:var(--text);border-color:var(--line-2)}
+
+  /* ---------- wireframe ---------- */
+  .wf-intro{display:flex;gap:14px;align-items:center;margin-bottom:30px;color:var(--faint);font-family:"Space Mono",monospace;font-size:11.5px;letter-spacing:.06em;flex-wrap:wrap}
+  .wf-legend{display:flex;gap:18px;flex-wrap:wrap}
+  .wf-legend span{display:inline-flex;align-items:center;gap:7px}
+  .dotbox{width:13px;height:13px;border:1px dashed var(--line-2);border-radius:3px;display:inline-block}
+  .dotfill{width:13px;height:13px;border-radius:3px;background:var(--silver);display:inline-block}
+
+  .frame{
+    display:grid;grid-template-columns:54px 1fr;gap:0;
+    border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:22px;
+    background:var(--ash-900);
+  }
+  .frame .rail{
+    background:linear-gradient(180deg,var(--ash-850),var(--ash-900));
+    border-right:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .frame .rail .rt{
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);
+  }
+  .frame .canvas{padding:30px}
+  .frame .annot{
+    padding:14px 30px;border-top:1px dashed var(--line);
+    font-family:"Space Mono",monospace;font-size:11.5px;color:var(--dim);line-height:1.6;
+  }
+  .frame .annot b{color:var(--text);font-weight:400;background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px}
+
+  /* placeholder primitives */
+  .ph{
+    border:1px dashed var(--line-2);border-radius:10px;
+    background:
+      repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 8px,transparent 8px 16px);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+    text-align:center;padding:14px;
+  }
+  .bar{height:14px;border-radius:5px;background:var(--ash-600)}
+  .bar.lg{height:26px}
+  .bar.sil{background:var(--silver)}
+  .stack{display:flex;flex-direction:column;gap:12px}
+  .row{display:flex;gap:14px}
+  .center{align-items:center;justify-content:center}
+  .pill-ph{height:42px;border-radius:10px;border:1px dashed var(--line-2);display:flex;align-items:center;justify-content:center;font-family:"Space Mono",monospace;font-size:11px;color:var(--faint)}
+
+  /* wireframe: nav */
+  .wf-nav{display:flex;align-items:center;justify-content:space-between;padding:6px 4px}
+  .wf-nav .ll{font-family:"UnifrakturCook",serif;font-size:22px;color:#cfd1d4}
+  .wf-nav .links{display:flex;gap:22px}
+  .wf-nav .links .bar{width:54px}
+
+  .footnote{color:var(--faint);font-family:"Space Mono",monospace;font-size:11.5px;margin-top:6px;line-height:1.7}
+
+  /* next steps */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;counter-reset:s}
+  .step{background:linear-gradient(180deg,var(--ash-850),var(--ash-900));border:1px solid var(--line);border-radius:14px;padding:22px}
+  .step .n{font-family:"Space Mono",monospace;color:var(--faint);font-size:12px;margin-bottom:10px}
+  .step h4{font-size:16px;font-weight:600;margin-bottom:6px}
+  .step p{color:var(--dim);font-size:13.5px;line-height:1.6}
+
+  .end-cta{padding:90px 0 110px;text-align:center}
+  .end-cta h3{font-size:clamp(26px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:14px}
+  .end-cta p{color:var(--dim);max-width:480px;margin:0 auto 30px}
+
+  @media(max-width:720px){
+    .wrap{padding:0 20px}
+    .docbar{padding:14px 20px}
+    .frame{grid-template-columns:1fr}
+    .frame .rail{flex-direction:row;border-right:0;border-bottom:1px solid var(--line);padding:8px}
+    .frame .rail .rt{writing-mode:horizontal-tb;transform:none}
+    .meta-row{gap:26px}
+  }
+</style>
+</head>
+<body>
+
+<div class="docbar">
+  <div class="logo">Lock In</div>
+  <div class="tag">
+    <span class="pill">Website Scheme</span>
+    <span class="pill">v1 · for review</span>
+  </div>
+</div>
+
+<!-- DOC HERO -->
+<header class="doc-hero">
+  <div class="wrap">
+    <div class="kicker">Landing page · focus &amp; deep-work app · drive downloads</div>
+    <h1>The scheme for<br><span class="chrome">Lock In.</span></h1>
+    <p class="lede">A wireframe and design system for your review — before I build the full clickable page. Here's how I'm reading the brief, the visual system I'd use, and the structure of the page. Tell me what to change.</p>
+    <div class="meta-row">
+      <div class="cell"><div class="k">Product</div><div class="v">Focus / deep-work app</div></div>
+      <div class="cell"><div class="k">Goal</div><div class="v">App downloads</div></div>
+      <div class="cell"><div class="k">Tone</div><div class="v">Refined · high-end · dark</div></div>
+      <div class="cell"><div class="k">Accent</div><div class="v">Monochrome silver</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- 00 — READING THE BRIEF -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">00</span><h2>How I'm reading this</h2><span class="h-note">design reasoning</span></div>
+    <p class="lead-copy">The image does a lot of work already: a <strong>chrome chess rook</strong> floating in ashy near-black, with <strong>“LOCK IN”</strong> set in blackletter. That's a strong, premium identity — heavy, focused, a little defiant. My job is to build a page that feels like an extension of that frame, not a busier version of it.</p>
+    <p class="lead-copy" style="margin-top:18px">So the strategy is <strong>restraint</strong>. Lots of black. Generous negative space. One material — polished silver — used like a precious metal, not a paint. Type is clean and quiet so the chrome and the rook stay the loudest things on screen. The whole page should feel like one continuous dark room you scroll through, where light catches metal here and there.</p>
+    <p class="lead-copy" style="margin-top:18px">The hero image is small (736×414), so I'll treat it as a <strong>contained centerpiece framed in darkness</strong> rather than a stretched full-bleed background — that keeps it crisp and makes the rook feel like an object on a pedestal.</p>
+    <p class="footnote">Big idea: <span style="color:var(--text)">“Lock In” = the ritual of focus.</span> The site sells a feeling — closing the door on the noise — more than a feature list.</p>
+  </div>
+</section>
+
+<!-- 01 — DESIGN SYSTEM -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">01</span><h2>Design system</h2><span class="h-note">tokens &amp; treatment</span></div>
+
+    <div class="grid" style="grid-template-columns:1fr;gap:18px">
+
+      <!-- colors -->
+      <div class="card">
+        <div class="c-label">Palette — ash &amp; silver, monochrome</div>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="background:#08080a"></div><div class="info"><div class="nm">Ash 950</div><div class="hx">#08080A</div></div></div>
+          <div class="sw"><div class="chip" style="background:#0b0c0e"></div><div class="info"><div class="nm">Ash 900</div><div class="hx">#0B0C0E</div></div></div>
+          <div class="sw"><div class="chip" style="background:#141518"></div><div class="info"><div class="nm">Ash 800</div><div class="hx">#141518</div></div></div>
+          <div class="sw"><div class="chip" style="background:#26282d"></div><div class="info"><div class="nm">Ash 600</div><div class="hx">#26282D</div></div></div>
+          <div class="sw"><div class="chip" style="background:linear-gradient(168deg,#fff,#d6d8dc 34%,#8e9197 52%,#c3c5c9 70%,#f3f4f5)"></div><div class="info"><div class="nm">Silver</div><div class="hx">chrome grad</div></div></div>
+          <div class="sw"><div class="chip" style="background:#f2f3f4"></div><div class="info"><div class="nm">Text</div><div class="hx">#F2F3F4</div></div></div>
+          <div class="sw"><div class="chip" style="background:#a6a9ad"></div><div class="info"><div class="nm">Dim</div><div class="hx">#A6A9AD</div></div></div>
+          <div class="sw"><div class="chip" style="background:#6c6f74"></div><div class="info"><div class="nm">Faint</div><div class="hx">#6C6F74</div></div></div>
+        </div>
+        <p class="footnote">No hue. The only “color” is the metallic gradient — reserved for the wordmark, key headlines, and the primary button.</p>
+      </div>
+
+      <!-- type -->
+      <div class="card">
+        <div class="c-label">Type — blackletter mark · grotesk · mono</div>
+        <div class="type-row">
+          <div class="tag">Logo / wordmark — UnifrakturCook</div>
+          <div class="specimen-black chrome">Lock In</div>
+        </div>
+        <div class="type-row">
+          <div class="tag">Display &amp; UI — Space Grotesk</div>
+          <div class="specimen-display">Close the door. Begin.</div>
+        </div>
+        <div class="type-row">
+          <div class="tag">Labels, stats, system text — Space Mono</div>
+          <div class="specimen-mono">02:14:08 — SESSION IN PROGRESS</div>
+        </div>
+      </div>
+
+      <!-- chrome treatment -->
+      <div class="card">
+        <div class="c-label">Signature treatment — polished chrome on ash</div>
+        <div class="chrome-demo">
+          <span class="chrome-word chrome">LOCK IN</span>
+          <a class="btn btn-silver" href="#">Download for iOS</a>
+          <a class="btn btn-ghost" href="#">See how it works</a>
+        </div>
+        <p class="footnote">Silver appears as: clipped-text headlines, the primary CTA, thin metallic rules, and the rook itself. Everything else is matte black + grey type.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 02 — PAGE ARCHITECTURE / WIREFRAME -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">02</span><h2>Page architecture</h2><span class="h-note">low-fi wireframe</span></div>
+    <div class="wf-intro">
+      <span>WIREFRAME — layout intent only, not final visuals</span>
+      <span class="wf-legend">
+        <span><span class="dotbox"></span> placeholder / media</span>
+        <span><span class="dotfill"></span> silver / primary action</span>
+      </span>
+    </div>
+
+    <!-- NAV -->
+    <div class="frame">
+      <div class="rail"><span class="rt">Nav</span></div>
+      <div class="canvas">
+        <div class="wf-nav">
+          <div class="ll">Lock In</div>
+          <div class="links"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+          <div class="pill-ph" style="width:120px">Download ↓</div>
+        </div>
+      </div>
+      <div class="annot">Sticky, transparent → blurs to ash on scroll. Links: <b>Features</b> <b>How it works</b> <b>Pricing</b> · right-aligned <b>Download</b> button (silver).</div>
+    </div>
+
+    <!-- HERO -->
+    <div class="frame">
+      <div class="rail"><span class="rt">Hero</span></div>
+      <div class="canvas">
+        <div class="ph" style="height:300px;flex-direction:column;gap:14px">
+          <div>THE IMAGE — chrome rook + “LOCK IN”, framed in dark</div>
+          <div class="row center" style="margin-top:6px">
+            <div class="pill-ph" style="width:150px;background:var(--silver);border:0;color:#0a0a0b">Download for iOS</div>
+            <div class="pill-ph" style="width:130px">Watch the ritual</div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">Full-height. Image as contained centerpiece. One line of <b>sub-headline</b> beneath, two CTAs. Subtle scroll cue. App Store / Play badges.</div>
+    </div>
+
+    <!-- MANIFESTO -->
+    <div class="frame">
+      <div class="rail"><span class="rt">Manifesto</span></div>
+      <div class="canvas">
+        <div class="stack center" style="text-align:center;gap:16px;padding:18px 0">
+          <div class="bar lg" style="width:78%"></div>
+          <div class="bar lg" style="width:64%"></div>
+          <div class="bar" style="width:40%"></div>
+        </div>
+      </div>
+      <div class="annot">One big statement of intent — large chrome-clipped headline + short line. Pure typography, max negative space. The “why”.</div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="frame">
+      <div class="rail"><span class="rt">Features</span></div>
+      <div class="canvas">
+        <div class="row" style="gap:16px">
+          <div class="stack" style="flex:1;gap:10px"><div class="ph" style="height:60px">ICON</div><div class="bar" style="width:60%"></div><div class="bar" style="width:90%;height:10px"></div><div class="bar" style="width:80%;height:10px"></div></div>
+          <div class="stack" style="flex:1;gap:10px"><div class="ph" style="height:60px">ICON</div><div class="bar" style="width:60%"></div><div class="bar" style="width:90%;height:10px"></div><div class="bar" style="width:80%;height:10px"></div></div>
+          <div class="stack" style="flex:1;gap:10px"><div class="ph" style="height:60px">ICON</div><div class="bar" style="width:60%"></div><div class="bar" style="width:90%;height:10px"></div><div class="bar" style="width:80%;height:10px"></div></div>
+        </div>
+      </div>
+      <div class="annot">Three pillars: <b>Sessions</b> (the timer/ritual) · <b>Streaks &amp; stats</b> · <b>Block the noise</b>. Thin line icons, mono labels, lots of air between rows.</div>
+    </div>
+
+    <!-- APP PREVIEW -->
+    <div class="frame">
+      <div class="rail"><span class="rt">App preview</span></div>
+      <div class="canvas">
+        <div class="row" style="gap:18px;align-items:stretch">
+          <div class="stack" style="flex:1.1;gap:12px;justify-content:center"><div class="bar lg" style="width:70%"></div><div class="bar" style="width:92%;height:11px"></div><div class="bar" style="width:84%;height:11px"></div></div>
+          <div class="ph" style="flex:.9;height:240px">PHONE MOCKUP — live timer / dashboard UI</div>
+        </div>
+      </div>
+      <div class="annot">Show the actual product. Mocked phone with the focus timer + a stats dashboard. Copy alternates left/right as you scroll (2–3 beats).</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="frame">
+      <div class="rail"><span class="rt">Proof</span></div>
+      <div class="canvas">
+        <div class="row" style="gap:16px">
+          <div class="ph" style="flex:1;height:78px">1.2M hrs locked</div>
+          <div class="ph" style="flex:1;height:78px">★ 4.9 rating</div>
+          <div class="ph" style="flex:1;height:78px">200k+ users</div>
+        </div>
+      </div>
+      <div class="annot">A quiet band of big mono numbers + a couple of short testimonials. Credibility without clutter.</div>
+    </div>
+
+    <!-- FINAL CTA -->
+    <div class="frame">
+      <div class="rail"><span class="rt">Download</span></div>
+      <div class="canvas">
+        <div class="stack center" style="text-align:center;gap:14px;padding:14px 0">
+          <div class="bar lg" style="width:55%"></div>
+          <div class="row center"><div class="pill-ph" style="width:150px;background:var(--silver);border:0;color:#0a0a0b">Download for iOS</div><div class="pill-ph" style="width:140px">Get on Android</div></div>
+        </div>
+      </div>
+      <div class="annot">The rook returns, smaller. Final push to <b>download</b>. Store badges + maybe a QR for desktop visitors.</div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="frame" style="margin-bottom:0">
+      <div class="rail"><span class="rt">Footer</span></div>
+      <div class="canvas">
+        <div class="wf-nav">
+          <div class="ll">Lock In</div>
+          <div class="links"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+      </div>
+      <div class="annot">Minimal. Wordmark, nav columns, socials, legal. Same ash, a single hairline at top.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 03 — NEXT -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">03</span><h2>What happens next</h2><span class="h-note">build plan</span></div>
+    <div class="steps">
+      <div class="step"><div class="n">→ 01</div><h4>You react</h4><p>Tell me what's wrong: sections to add/cut, the tone, the order, the accent decision.</p></div>
+      <div class="step"><div class="n">→ 02</div><h4>I build the hero</h4><p>Full-fidelity hero with the real image, type, and motion — shown to you fast.</p></div>
+      <div class="step"><div class="n">→ 03</div><h4>I build the full page</h4><p>Every section above, fully interactive: scroll reveals, hover states, working nav.</p></div>
+      <div class="step"><div class="n">→ 04</div><h4>We iterate</h4><p>Tweak panel for fonts, spacing, and copy so you can dial it in yourself.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- END CTA -->
+<section class="end-cta">
+  <div class="wrap">
+    <div class="kicker" style="display:block;margin-bottom:18px">Your move</div>
+    <h3>Approve the scheme, or tell me what to change.</h3>
+    <p>Once you're happy with the structure and system, I'll build the full clickable landing page.</p>
+    <div class="logo chrome" style="font-size:40px;margin-top:10px">Lock In</div>
+  </div>
+</section>
+
+<script>
+  // subtle: solidify docbar on scroll
+  const bar=document.querySelector('.docbar');
+  addEventListener('scroll',()=>{bar.style.borderBottomColor=scrollY>20?'rgba(255,255,255,.14)':'rgba(255,255,255,.085)';});
+</script>
+</body>
+</html>
