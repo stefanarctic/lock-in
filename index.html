@@ -17,10 +17,10 @@
     --ash-600:#26282d;
     --line:rgba(255,255,255,.085);
     --line-2:rgba(255,255,255,.16);
-    --text:#f2f3f4;
-    --dim:#a6a9ad;
-    --faint:#6c6f74;
-    --silver:linear-gradient(168deg,#ffffff 0%,#d6d8dc 34%,#8e9197 52%,#c3c5c9 70%,#f3f4f5 100%);
+    --text:#f5f6f7;
+    --dim:#c8cacd;
+    --faint:#9ea1a6;
+    --silver:linear-gradient(168deg,#ffffff 0%,#eceef1 26%,#c4c7cc 44%,#e8eaed 62%,#ffffff 100%);
     /* brighter, flatter silver for buttons so dark text stays legible */
     --silver-btn:linear-gradient(180deg,#fcfcfd 0%,#eaecee 46%,#d2d5d9 60%,#eef0f2 100%);
     --maxw:1180px;
@@ -42,6 +42,7 @@
     background:var(--silver);
     -webkit-background-clip:text;background-clip:text;
     -webkit-text-fill-color:transparent;color:transparent;
+    filter:drop-shadow(0 2px 14px rgba(0,0,0,.75)) drop-shadow(0 0 32px rgba(8,8,10,.85));
   }
   .logo{font-family:"Grenze Gotisch",serif;font-weight:700;white-space:nowrap;letter-spacing:.005em}
   .kicker{
@@ -59,7 +60,7 @@
   .nav.solid{background:rgba(8,8,10,.72);backdrop-filter:blur(16px);border-bottom-color:var(--line);padding:14px 32px}
   .nav .logo{font-size:27px;color:#e9eaec;line-height:1.2}
   .nav .links{display:flex;gap:30px;align-items:center}
-  .nav .links a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+  .nav .links a{color:#d8dadc;text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
   .nav .links a:hover{color:var(--text)}
   .nav .links a.nav-cta{
     display:inline-flex;align-items:center;gap:8px;background:var(--silver-btn);color:#000;
@@ -80,10 +81,11 @@
   }
   /* vignette + legibility scrims over video */
   .hero .scrim{
-    position:absolute;inset:0;pointer-events:none;
+    position:absolute;inset:0;pointer-events:none;opacity:1;
     background:
-      radial-gradient(120% 90% at 50% 35%,transparent 35%,rgba(8,8,10,.55) 100%),
-      linear-gradient(180deg,rgba(8,8,10,.55) 0%,transparent 22%,transparent 55%,rgba(8,8,10,.92) 100%);
+      radial-gradient(ellipse 72% 52% at 50% 44%,rgba(8,8,10,.82) 0%,rgba(8,8,10,.45) 52%,transparent 78%),
+      radial-gradient(120% 90% at 50% 35%,transparent 30%,rgba(8,8,10,.62) 100%),
+      linear-gradient(180deg,rgba(8,8,10,.65) 0%,transparent 22%,transparent 55%,rgba(8,8,10,.94) 100%);
   }
   .hero .stage::after{ /* film grain-ish top edge for nav legibility */
     content:"";position:absolute;top:0;left:0;right:0;height:140px;
@@ -91,26 +93,27 @@
   }
   /* masks the Kling watermark in the bottom-right corner: blurs + tints toward ash, feathered so there's no hard edge */
   .hero .wm-cover{
-    position:absolute;right:0;bottom:0;z-index:2;width:520px;height:250px;pointer-events:none;
-    background:radial-gradient(125% 135% at 100% 100%,rgba(8,8,10,.98) 0%,rgba(8,8,10,.6) 50%,rgba(8,8,10,0) 82%);
-    -webkit-backdrop-filter:blur(14px) brightness(.65);backdrop-filter:blur(14px) brightness(.65);
-    -webkit-mask-image:radial-gradient(125% 135% at 100% 100%,#000 40%,rgba(0,0,0,0) 84%);
-    mask-image:radial-gradient(125% 135% at 100% 100%,#000 40%,rgba(0,0,0,0) 84%);
+    position:absolute;right:0;bottom:0;z-index:2;width:600px;height:300px;pointer-events:none;
+    background:radial-gradient(125% 135% at 100% 100%,rgba(8,8,10,1) 0%,rgba(8,8,10,.82) 50%,rgba(8,8,10,.12) 90%);
+    -webkit-backdrop-filter:blur(14px) brightness(.52);backdrop-filter:blur(14px) brightness(.52);
+    -webkit-mask-image:radial-gradient(125% 135% at 100% 100%,#000 52%,rgba(0,0,0,0) 90%);
+    mask-image:radial-gradient(125% 135% at 100% 100%,#000 52%,rgba(0,0,0,0) 90%);
   }
-  @media(max-width:760px){.hero .wm-cover{width:300px;height:150px}}
+  @media(max-width:760px){.hero .wm-cover{width:360px;height:180px}}
   .hero .content{
     position:absolute;inset:0;z-index:3;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;padding:0 24px;
   }
-  .hero .content .eyebrow{margin-bottom:26px;opacity:0;transform:translateY(14px);animation:rise .9s .2s ease forwards}
+  .hero .content .eyebrow{margin-bottom:26px;color:#d0d2d6;text-shadow:0 1px 12px rgba(0,0,0,.7);opacity:0;transform:translateY(14px);animation:rise .9s .2s ease forwards}
   .hero h1{
     font-size:clamp(54px,11vw,150px);line-height:.86;font-weight:700;letter-spacing:-.04em;
   }
   .hero h1 .l1{display:block;opacity:0;transform:translateY(22px);animation:rise 1s .32s cubic-bezier(.2,.7,.2,1) forwards}
   .hero h1 .l2{display:block;opacity:0;transform:translateY(22px);animation:rise 1s .46s cubic-bezier(.2,.7,.2,1) forwards}
   .hero .sub{
-    max-width:540px;margin:30px auto 0;color:var(--dim);font-size:clamp(16px,2.1vw,20px);line-height:1.6;
+    max-width:540px;margin:30px auto 0;color:#e2e4e7;font-size:clamp(16px,2.1vw,20px);line-height:1.6;
+    text-shadow:0 2px 18px rgba(0,0,0,.65);
     opacity:0;transform:translateY(16px);animation:rise 1s .62s ease forwards;
   }
   .hero .actions{
@@ -128,17 +131,18 @@
   .btn svg{width:17px;height:17px;flex:none}
   .btn-silver{background:var(--silver-btn);color:#070708;font-weight:700;box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 -1px 1px rgba(0,0,0,.15) inset,0 10px 30px rgba(0,0,0,.55)}
   .btn-silver:hover{transform:translateY(-2px);filter:brightness(1.07)}
-  .btn-ghost{background:rgba(255,255,255,.04);border-color:var(--line-2);backdrop-filter:blur(6px)}
-  .btn-ghost:hover{background:rgba(255,255,255,.09);transform:translateY(-2px)}
+  .btn-ghost{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.32);color:#f5f6f7;backdrop-filter:blur(6px)}
+  .btn-ghost:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.42);transform:translateY(-2px)}
 
   /* scroll cue + progress dial */
   .scroll-cue{
     position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:4;
     display:flex;flex-direction:column;align-items:center;gap:10px;
-    font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint);
+    font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:#b8bbc0;
+    text-shadow:0 1px 10px rgba(0,0,0,.7);
     transition:opacity .4s;
   }
-  .scroll-cue .track{width:1px;height:46px;background:linear-gradient(180deg,var(--faint),transparent);position:relative;overflow:hidden}
+  .scroll-cue .track{width:1px;height:46px;background:linear-gradient(180deg,#b8bbc0,transparent);position:relative;overflow:hidden}
   .scroll-cue .track::after{content:"";position:absolute;top:-50%;left:0;width:100%;height:50%;background:#fff;animation:drip 1.8s ease-in-out infinite}
   @keyframes drip{0%{top:-50%}60%,100%{top:120%}}
 
@@ -284,7 +288,7 @@
   <div class="stage">
     <video id="heroVideo" muted playsinline preload="auto" disablepictureinpicture
       src="https://res.cloudinary.com/ddbwrwscc/video/upload/v1780959570/kling_20260609_VIDEO_in_the_vid_1700_0_njewgt.mp4"></video>
-    <div class="scrim"></div>
+    <div class="scrim" id="heroScrim"></div>
     <div class="wm-cover"></div>
 
     <div class="content" id="heroContent">
@@ -475,6 +479,7 @@ document.querySelectorAll('.reveal').forEach((el,i)=>{
   const hero=document.getElementById('hero');
   const video=document.getElementById('heroVideo');
   const content=document.getElementById('heroContent');
+  const scrim=document.getElementById('heroScrim');
   const cue=document.getElementById('scrollCue');
   const rotor=document.getElementById('rotor');
   const rotorArc=document.getElementById('rotorArc');
@@ -523,10 +528,11 @@ document.querySelectorAll('.reveal').forEach((el,i)=>{
     const deg=Math.round(p*360);
     if(rotorArc){rotorArc.style.strokeDashoffset=(ARC*(1-p)).toFixed(2);}
     if(rotorPct){rotorPct.textContent=deg+'°';}
-    // fade hero copy + cue out over first 45% of scrub
+    // fade hero copy, scrim + cue out over first 45% of scrub
     const fade=Math.max(0,1-p/0.45);
     content.style.opacity=fade.toFixed(3);
     content.style.transform='translateY('+(-(1-fade)*40).toFixed(1)+'px) scale('+(1-(1-fade)*0.04).toFixed(3)+')';
+    if(scrim) scrim.style.opacity=fade.toFixed(3);
     cue.style.opacity=fade.toFixed(3);
     if(rotor) rotor.style.opacity=(p>0.02&&p<0.99?1:0);
     requestAnimationFrame(tick);
